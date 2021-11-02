@@ -1,14 +1,14 @@
 import numpy as np
 from scipy.stats import chi2, rankdata
-from typing import List, Tuple
+from typing import List
 
 
-def test(histories_a: List[list], histories_b: List[list]) -> Tuple[float, float]:
+def test(histories_a: List[list], histories_b: List[list]) -> float:
     """A - B"""
     cut_points = _get_cut_points(histories_a[0])
     page_l = _get_page_l(histories_a, histories_b, cut_points)
     p_value = _get_p_value(page_l, len(histories_a), len(cut_points))
-    return page_l, p_value
+    return p_value
 
 
 def _get_cut_points(history) -> List[int]:
@@ -29,14 +29,15 @@ def _get_page_l(histories_a: List[list], histories_b: List[list], cut_points: Li
             )
 
         rank = rankdata(difference)
-        rank_lists.append(rank)
+        rank_reversed = len(rank) - rank.astype(int) + 1
+        rank_lists.append(rank_reversed)
 
     rank_sum = []
     for i in range(len(rank_lists[0])):
         rank_sum.append(
             sum([row[i] for row in rank_lists]) * (i + 1)
         )
-    
+
     return sum(rank_sum)
 
 
