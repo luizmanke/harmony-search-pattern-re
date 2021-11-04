@@ -1,7 +1,7 @@
 import numpy as np
 import random
 from imblearn.under_sampling import RandomUnderSampler
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List
 
 
 class DBpedia:
