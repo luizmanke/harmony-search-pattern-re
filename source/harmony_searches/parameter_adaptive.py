@@ -1,3 +1,5 @@
+import math
+import numpy as np
 from .original import OriginalHS
 
 
@@ -16,4 +18,4 @@ class ParameterAdaptiveHS(OriginalHS):
         return self.hmcr_min_ + ((self.hmcr_max_ - self.hmcr_min_) * generation / self.n_generations_)
 
     def _get_par(self, generation: int) -> float:
-        return self.par_min_ + ((self.par_max_ - self.par_min_) * (self.n_generations_ - generation) / self.n_generations_)
+        return self.par_max_ * math.exp(np.log(self.par_min_/self.par_max_) * generation / self.n_generations_)
