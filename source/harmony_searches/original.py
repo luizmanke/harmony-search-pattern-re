@@ -1,7 +1,6 @@
 import numpy as np
 import random
 from copy import deepcopy
-from tqdm import tqdm
 from typing import List
 from .base import ANY_VALUE, BaseMethods
 
@@ -27,7 +26,7 @@ class OriginalHS(BaseMethods):
     def fit(self, samples: List[dict], labels: List[int]) -> None:
         self.samples_, self.labels_ = samples, labels
         self._compute_possible_parametes()
-        self.histories_ = [self._run() for _ in tqdm(range(self.n_runs_))]
+        self.histories_ = self.multiprocess(self._run, self.n_runs_)
         self._select_best_harmonies()
 
     def plot_training_curve(self) -> None:
