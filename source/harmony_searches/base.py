@@ -24,7 +24,7 @@ class BaseMethods:
 
     @staticmethod
     def multiprocess(func: Callable, n_runs: int) -> list:
-        pool = Pool(processes=10)
+        pool = Pool(processes=5)
         results = [pool.apply_async(func) for _ in range(n_runs)]
         pool.close()  # no more tasks will be submitted to the pool
         pool.join()  # wait for all tasks to finish before moving on
