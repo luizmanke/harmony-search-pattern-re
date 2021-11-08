@@ -14,7 +14,7 @@ def _get_best_fitness(histories: List[list]) -> List[float]:
     for history in histories:
         best_fitness = float("-inf")
         for harmony in history[-1]:
-            fitness = harmony[1].f1
+            fitness = harmony.f1
             if fitness > best_fitness:
                 best_fitness = fitness
         best_fitness_list.append(best_fitness)

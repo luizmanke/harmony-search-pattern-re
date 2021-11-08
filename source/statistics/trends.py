@@ -15,7 +15,7 @@ def _compute_fitness_per_run(histories_dict: dict) -> dict:
         for history in histories:
             fitness = []
             for generation in history:
-                best_fitness = max([solution[1].f1 for solution in generation])
+                best_fitness = max([solution.f1 for solution in generation])
                 fitness.append(best_fitness)
             fitness_dict[key].append(fitness)
     return fitness_dict
@@ -36,6 +36,7 @@ def _plot_trends(fitness: dict) -> None:
     for key, values in fitness.items():
         plt.plot(values, label=key)
     plt.legend(loc="upper left", prop={"size": 12})
-    plt.ylabel("f1", size=14, labelpad=10)
+    plt.ylabel("F1", size=14, labelpad=10)
+    plt.xlabel("Generation", size=14, labelpad=10)
     plt.grid(True)
     plt.show()
