@@ -26,25 +26,28 @@ class OriginalHS(BaseMethods):
     def fit(self, samples: List[dict], labels: List[int]) -> None:
         self.samples_, self.labels_ = samples, labels
         self._compute_possible_parametes()
-        self.histories_ = self.multiprocess(self._run, self.n_runs_)
-        self._select_best_harmonies()
+        results = self.multiprocess(self._run, self.n_runs_)
+        self.histories = [result["history"] for result in results]
+        self.best_harmonies_ = [result["best_harmony"] for result in results]
 
     def plot_training_curve(self) -> None:
-        BaseMethods.plot_training_curve(self.histories_)
+        BaseMethods.plot_training_curve(self.histories)
 
     def evaluate(self, samples: List[dict], labels: List[int]) -> dict:
         results = {"f1": [], "precision": [], "recall": []}
+        f1, precision, recall = [], [], []
         for harmony in self.best_harmonies_:
             result = BaseMethods.evaluate(self, samples, labels, harmony)
-            results["f1"].append(result["f1"])
-            results["precision"].append(result["precision"])
-            results["recall"].append(result["recall"])
-        results["f1"] = f"{np.mean(results['f1']):.4} ± {np.std(results['f1']):.4}"
-        results["precision"] = f"{np.mean(results['precision']):.4} ± {np.std(results['precision']):.4}"
-        results["recall"] = f"{np.mean(results['recall']):.4} ± {np.std(results['recall']):.4}"
-        return results
+            f1.append(result["f1"])
+            precision.append(result["precision"])
+            recall.append(result["recall"])
+        return {
+            "f1": f"{np.mean(f1):.4} ± {np.std(f1):.4}",
+            "precision": f"{np.mean(precision):.4} ± {np.std(precision):.4}",
+            "recall": f"{np.mean(recall):.4} ± {np.std(recall):.4}"
+        }
 
-    def _run(self) -> List[list]:
+    def _run(self) -> dict:
         history = []
         harmony_memory = self._create_harmony_memory()
         for i in range(self.n_generations_ * self.n_harmonies_):
@@ -52,8 +55,9 @@ class OriginalHS(BaseMethods):
             new_fitness = self.objective_function(self.samples_, self.labels_, new_harmony)
             self._update_harmony_memory(harmony_memory, new_harmony, new_fitness)
             if i % self.n_harmonies_ == 0:
-                history.append(deepcopy(harmony_memory))
-        return history
+                history.append([harmony[1] for harmony in harmony_memory])
+        best_harmony = self._select_best_harmony(harmony_memory)
+        return {"history": history, "best_harmony": best_harmony}
 
     def _compute_possible_parametes(self) -> None:
         i = 0
@@ -67,7 +71,7 @@ class OriginalHS(BaseMethods):
                 self.possible_parameters_.append(sample)
                 i += 1
 
-    def _create_harmony_memory(self) -> List[dict]:
+    def _create_harmony_memory(self) -> List[tuple]:
         harmony_memory = []
         for _ in range(self.n_harmonies_):
             new_harmony = [self._get_from_possible_parameters() for _ in range(self.n_parameters_)]
@@ -75,7 +79,7 @@ class OriginalHS(BaseMethods):
             harmony_memory.append((new_harmony, new_fitness))
         return harmony_memory
 
-    def _improvise(self, harmony_memory: List[dict], generation: int) -> dict:
+    def _improvise(self, harmony_memory: List[tuple], generation: int) -> dict:
         harmony = [{}] * self.n_parameters_
         for i in range(self.n_parameters_):
             if random.random() < self._get_hmcr(generation):
@@ -86,7 +90,7 @@ class OriginalHS(BaseMethods):
                 harmony[i] = self._get_from_possible_parameters()
         return harmony
 
-    def _get_from_harmony_memory(self, harmony_memory: List[dict]) -> dict:
+    def _get_from_harmony_memory(self, harmony_memory: List[tuple]) -> dict:
         index = random.randint(0, self.n_harmonies_-1)
         return deepcopy(harmony_memory[index][0])
 
@@ -124,9 +128,9 @@ class OriginalHS(BaseMethods):
         index = random.randint(0, max_value)
         return deepcopy(self.possible_parameters_[index])
 
+    @staticmethod
     def _update_harmony_memory(
-        self,
-        harmony_memory: List[dict],
+        harmony_memory: List[tuple],
         new_harmony: dict,
         new_fitness: float
     ) -> None:
@@ -140,14 +144,12 @@ class OriginalHS(BaseMethods):
             if new_fitness > worst_fitness:
                 harmony_memory[worst_index] = (new_harmony, new_fitness)
 
-    def _select_best_harmonies(self) -> None:
-        self.best_harmonies_ = []
-        for history in self.histories_:
-            best_harmony = None
-            best_fitness = float("-inf")
-            for harmony in history[-1]:
-                fitness = harmony[1].f1
-                if fitness > best_fitness:
-                    best_fitness = fitness
-                    best_harmony = harmony[0]
-            self.best_harmonies_.append(best_harmony)
+    @staticmethod
+    def _select_best_harmony(harmony_memory: List[tuple]) -> None:
+        best_harmony = None
+        best_fitness = float("-inf")
+        for harmony, fitness in harmony_memory:
+            if fitness.f1 > best_fitness:
+                best_fitness = fitness.f1
+                best_harmony = harmony
+        return best_harmony
