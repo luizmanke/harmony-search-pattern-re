@@ -4,7 +4,7 @@ import seaborn as sns
 
 def plot(histories: dict) -> None:
     fitness = _compute_best_fitness_per_run(histories)
-    _plot_hists(fitness)
+    _plot_distribution(fitness)
 
 
 def _compute_best_fitness_per_run(histories_dict: dict) -> dict:
@@ -17,7 +17,7 @@ def _compute_best_fitness_per_run(histories_dict: dict) -> dict:
     return fitness_dict
 
 
-def _plot_hists(fitness: dict) -> None:
+def _plot_distribution(fitness: dict) -> None:
     _, ax = plt.subplots(figsize=(16, 6))
     for key, values in fitness.items():
         sns.kdeplot(values, shade=True, label=key, ax=ax)
