@@ -33,7 +33,7 @@ def _plot_diversity(fitness: list) -> None:
 
     plt.figure(figsize=(16, 6))
     sns.boxplot(data=df_selected, x="generation", y="value", hue="key")
-    plt.legend(loc="upper left", prop={"size": 12})
+    plt.legend(loc="lower left", prop={"size": 12})
     plt.ylabel("F1", size=14, labelpad=10)
     plt.xlabel("Generation", size=14, labelpad=10)
     plt.grid(True)
