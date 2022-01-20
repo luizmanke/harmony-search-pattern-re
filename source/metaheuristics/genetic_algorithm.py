@@ -27,7 +27,7 @@ class GeneticAlgorithm(BaseMetaheuristic):
         )
 
     def run(self) -> dict:
-        self.history_ = []
+        self.history_: List[list] = []
         population = self._create_solutions()
         for i in range(self.n_generations_):
             new_individuals = self._crossover(population)
@@ -57,10 +57,10 @@ class GeneticAlgorithm(BaseMetaheuristic):
     def _roulette_wheel(population: List[tuple]) -> List[dict]:
         total = sum([individual[1].f1 for individual in population])
         probabilities = [individual[1].f1/total for individual in population]
-        individual = population[random.choice(len(population), weights=probabilities)[0]]
+        individual = random.choices(population, weights=probabilities)[0]
         return individual[0]
 
-    def _mutate(self, individuals: List[list]) -> List[dict]:
+    def _mutate(self, individuals: List[list]) -> List[list]:
         new_individuals = []
         for i, individual in enumerate(deepcopy(individuals)):
             if i >= self.n_elites_:
@@ -92,7 +92,7 @@ class GeneticAlgorithm(BaseMetaheuristic):
         return new_individuals
 
     def _update_population(self, individuals: List[list]) -> List[tuple]:
-        population = []
+        population: List[tuple] = []
         for individual in individuals:
             fitness = self.get_fitness(self.samples_, self.labels_, individual)
             population.append((individual, fitness))

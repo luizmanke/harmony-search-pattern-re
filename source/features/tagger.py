@@ -57,7 +57,6 @@ class Tagger:
 
     @staticmethod
     def _select_tags(tags: List[int], start_index: int, end_index: int) -> dict:
-        N_TAGS_BEFORE, N_TAGS_AFTER = 2, 2
         return {
             "between": tags[start_index+1:end_index]
         }

@@ -27,7 +27,7 @@ class HarmonySearch(BaseMetaheuristic):
         )
 
     def run(self) -> dict:
-        self.history_ = []
+        self.history_: List[list] = []
         harmony_memory = self._create_solutions()
         for i in range(self.n_generations_ * self.n_solutions_):
             new_harmony = self._improvise(harmony_memory)
@@ -37,8 +37,8 @@ class HarmonySearch(BaseMetaheuristic):
         best_harmony = self._select_best_solution(harmony_memory)
         return {"history": self.history_, "best_solution": best_harmony}
 
-    def _improvise(self, harmony_memory: List[tuple]) -> dict:
-        harmony = [{}] * self.n_parameters_
+    def _improvise(self, harmony_memory: List[tuple]) -> List[dict]:
+        harmony: List[dict] = [{}] * self.n_parameters_
         for i in range(self.n_parameters_):
             if random.random() < self.hmcr_:
                 harmony[i] = self._get_from_harmony_memory(harmony_memory)[i]
@@ -78,11 +78,11 @@ class HarmonySearch(BaseMetaheuristic):
     @staticmethod
     def _update_harmony_memory(
         solutions: List[tuple],
-        new_solution: dict,
+        new_solution: List[dict],
         new_fitness: float
     ) -> None:
         if (new_solution, new_fitness) not in solutions:
-            worst_index = None
+            worst_index = 0
             worst_fitness = float("inf")
             for i, (_, fitness) in enumerate(solutions):
                 if fitness < worst_fitness:

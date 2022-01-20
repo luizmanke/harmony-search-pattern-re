@@ -30,20 +30,17 @@ class SimulatedAnnealing(BaseMetaheuristic):
         )
 
     def run(self) -> dict:
-        try:
-            self.history_ = []
-            current_population = self._create_solutions()
-            best_population = deepcopy(current_population)
-            for i in range(self.n_generations_):
-                candidate_individuals = self._take_a_step(current_population)
-                candidate_population = self._evaluate_individuals(candidate_individuals)
-                best_population = self._update_best_population(best_population, candidate_population)
-                current_population = self._update_current_population(current_population, candidate_population, i)
-                self._update_history(best_population)
-            best_individual = self._select_best_solution(best_population)
-            return {"history": self.history_, "best_solution": best_individual}
-        except Exception as error:
-            print(error)
+        self.history_: List[list] = []
+        current_population = self._create_solutions()
+        best_population = deepcopy(current_population)
+        for i in range(self.n_generations_):
+            candidate_individuals = self._take_a_step(current_population)
+            candidate_population = self._evaluate_individuals(candidate_individuals)
+            best_population = self._update_best_population(best_population, candidate_population)
+            current_population = self._update_current_population(current_population, candidate_population, i)
+            self._update_history(best_population)
+        best_individual = self._select_best_solution(best_population)
+        return {"history": self.history_, "best_solution": best_individual}
 
     def _take_a_step(self, population: List[tuple]) -> List[list]:
         new_individuals = []
@@ -77,7 +74,7 @@ class SimulatedAnnealing(BaseMetaheuristic):
         return new_individuals
 
     def _evaluate_individuals(self, individuals: List[list]) -> List[tuple]:
-        population = []
+        population: List[tuple] = []
         for individual in individuals:
             fitness = self.get_fitness(self.samples_, self.labels_, individual)
             population.append((individual, fitness))
@@ -88,7 +85,7 @@ class SimulatedAnnealing(BaseMetaheuristic):
         best_population: List[tuple],
         candidate_population: List[tuple]
     ) -> List[tuple]:
-        new_best_population = []
+        new_best_population: List[tuple] = []
         for best_tuple, candidate_tuple in zip(best_population, candidate_population):
             if best_tuple[1].f1 >= candidate_tuple[1].f1:
                 new_best_population.append(best_tuple)

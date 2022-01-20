@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import seaborn as sns
+from typing import Dict
 
 
 def plot(histories: dict) -> None:
@@ -8,7 +9,7 @@ def plot(histories: dict) -> None:
 
 
 def _compute_best_fitness_per_run(histories_dict: dict) -> dict:
-    fitness_dict = {}
+    fitness_dict: Dict[str, list] = {}
     for key, histories in histories_dict.items():
         fitness_dict[key] = []
         for history in histories:

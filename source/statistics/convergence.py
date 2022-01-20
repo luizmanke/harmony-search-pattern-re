@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
+from typing import Dict
 
 
 def plot(histories: dict) -> None:
@@ -9,7 +10,7 @@ def plot(histories: dict) -> None:
 
 
 def _compute_fitness_per_run(histories_dict: dict) -> dict:
-    fitness_dict = {}
+    fitness_dict: Dict[str, list] = {}
     for key, histories in histories_dict.items():
         fitness_dict[key] = []
         for history in histories:
@@ -22,7 +23,7 @@ def _compute_fitness_per_run(histories_dict: dict) -> dict:
 
 
 def _compute_mean_fitness_per_algorithm(fitness_dict: dict) -> dict:
-    mean_fitness_dict = {}
+    mean_fitness_dict: Dict[str, list] = {}
     for key, history in fitness_dict.items():
         mean_fitness_dict[key] = []
         for i in range(len(history[0])):

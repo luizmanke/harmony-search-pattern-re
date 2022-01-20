@@ -1,8 +1,5 @@
 # TODO: use SOLUTION class
 # TODO: reuse mutation function
-# TODO: update statistics
-
-
 
 import numpy as np
 import random
@@ -96,7 +93,7 @@ class BaseMetaheuristic(ObjectiveFunction):
 
     def _compute_possible_parametes(self) -> None:
         i = 0
-        self.possible_parameters_ = []
+        self.possible_parameters_: List[dict] = []
         samples_positive = [sample for sample, label in zip(self.samples_, self.labels_) if label == 1]
         for sample in samples_positive:
             if sample not in self.possible_parameters_:
@@ -110,7 +107,7 @@ class BaseMetaheuristic(ObjectiveFunction):
         return deepcopy(self.possible_parameters_[index])
 
     def _create_solutions(self) -> List[tuple]:
-        solutions = []
+        solutions: List[tuple] = []
         for _ in range(self.n_solutions_):
             new_solution = [self._get_from_possible_parameters() for _ in range(self.n_parameters_)]
             new_fitness = self.get_fitness(self.samples_, self.labels_, new_solution)
