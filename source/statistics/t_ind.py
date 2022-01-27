@@ -1,11 +1,11 @@
-from scipy.stats import ttest_ind
+from scipy.stats import wilcoxon
 from typing import List, Tuple
 
 
 def test(histories_a: List[list], histories_b: List[list]) -> Tuple[float, float]:
     best_fitness_a = _get_best_fitness(histories_a)
     best_fitness_b = _get_best_fitness(histories_b)
-    w_statistic, p_value = ttest_ind(best_fitness_a, best_fitness_b)
+    w_statistic, p_value = wilcoxon(best_fitness_a, best_fitness_b)
     return round(w_statistic, 4), round(p_value, 4)
 
 

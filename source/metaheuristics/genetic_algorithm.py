@@ -1,8 +1,7 @@
-import numpy as np
 import random
 from copy import deepcopy
 from typing import List
-from .utils import ANY_VALUE, BaseMetaheuristic
+from .utils import BaseMetaheuristic
 
 
 class GeneticAlgorithm(BaseMetaheuristic):
@@ -65,29 +64,7 @@ class GeneticAlgorithm(BaseMetaheuristic):
         for i, individual in enumerate(deepcopy(individuals)):
             if i >= self.n_elites_:
                 for parameter in individual:
-
-                    original_parameter = self.possible_parameters_[parameter["index"]]
-                    if random.random() >= self.mutation_rate_:
-                        continue
-
-                    has_changed = False
-                    for key, values in parameter.items():
-
-                        if key == "index":
-                            continue
-
-                        indexes = np.arange(0, len(values))
-                        random.shuffle(indexes)
-                        for index in indexes:
-                            baseline = ANY_VALUE if random.random() < 0.5 else original_parameter[key][index]
-                            if values[index] != baseline:
-                                values[index] = baseline
-                                has_changed = True
-                                break
-
-                        if has_changed:
-                            break
-
+                    self._tweak_parameter(parameter, self.mutation_rate_)
             new_individuals.append(individual)
         return new_individuals
 

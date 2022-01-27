@@ -1,8 +1,7 @@
-import numpy as np
 import random
 from copy import deepcopy
 from typing import List
-from .utils import ANY_VALUE, BaseMetaheuristic
+from .utils import BaseMetaheuristic
 
 
 class HarmonySearch(BaseMetaheuristic):
@@ -42,8 +41,7 @@ class HarmonySearch(BaseMetaheuristic):
         for i in range(self.n_parameters_):
             if random.random() < self.hmcr_:
                 harmony[i] = self._get_from_harmony_memory(harmony_memory)[i]
-                if random.random() < self.par_:
-                    self._pitch_adjustment(harmony[i])
+                self._tweak_parameter(harmony[i], self.par_)
             else:
                 harmony[i] = self._get_from_possible_parameters()
         return harmony
@@ -51,29 +49,6 @@ class HarmonySearch(BaseMetaheuristic):
     def _get_from_harmony_memory(self, harmony_memory: List[tuple]) -> dict:
         index = random.randint(0, self.n_solutions_-1)
         return deepcopy(harmony_memory[index][0])
-
-    def _pitch_adjustment(self, parameter: dict) -> None:
-
-        random_value = random.random()
-        original_parameter = self.possible_parameters_[parameter["index"]]
-
-        has_changed = False
-        for key, values in parameter.items():
-
-            if key == "index":
-                continue
-
-            indexes = np.arange(0, len(values))
-            random.shuffle(indexes)
-            for index in indexes:
-                baseline = ANY_VALUE if random_value < 0.5 else original_parameter[key][index]
-                if values[index] != baseline:
-                    values[index] = baseline
-                    has_changed = True
-                    break
-
-            if has_changed:
-                break
 
     @staticmethod
     def _update_harmony_memory(

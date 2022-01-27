@@ -1,6 +1,3 @@
-# TODO: use SOLUTION class
-# TODO: reuse mutation function
-
 import numpy as np
 import random
 from copy import deepcopy
@@ -24,10 +21,6 @@ class Fitness:
 
     def __lt__(self, other):
         return self.f1 < other
-
-
-class Solution(Fitness):
-    pass
 
 
 class ObjectiveFunction:
@@ -118,6 +111,28 @@ class BaseMetaheuristic(ObjectiveFunction):
     def _select_best_solution(solutions: List[tuple]) -> None:
         sorted_solutions = sorted(solutions, key=lambda x: x[1].f1, reverse=True)
         return sorted_solutions[1][0]
+
+    def _tweak_parameter(self, parameter: dict, probability: float) -> None:
+        if random.random() >= probability:
+            return
+
+        has_changed = False
+        original_parameter = self.possible_parameters_[parameter["index"]]
+        for key, values in parameter.items():
+            if key == "index":
+                continue
+
+            indexes = np.arange(0, len(values))
+            random.shuffle(indexes)
+            for index in indexes:
+                baseline = ANY_VALUE if random.random() < 0.5 else original_parameter[key][index]
+                if values[index] != baseline:
+                    values[index] = baseline
+                    has_changed = True
+                    break
+
+            if has_changed:
+                break
 
     def evaluate(self, samples: List[dict], labels: List[int]) -> dict:
         f1, precision, recall = [], [], []
